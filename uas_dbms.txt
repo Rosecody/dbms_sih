@@ -1,0 +1,35 @@
+CREATE TRIGGER insert_kamar AFTER INSERT ON kamar_0069 FOR EACH ROW
+INSERT INTO log_perubahan SET nama_kamar= new.nama_kamar, harga_lama= 0, harga_baru=new.harga, waktu_perubahan=now();
+
+CREATE TRIGGER update_kamar AFTER UPDATE ON kamar_0069 FOR EACH ROW
+INSERT INTO log_perubahan SET nama_kamar= old.nama_kamar, harga_lama= old.harga, harga_baru=new.harga, waktu_perubahan=now();
+
+CREATE TRIGGER delete_kamar AFTER DELETE ON kamar_0069 FOR EACH ROW
+INSERT INTO log_perubahan SET nama_kamar= old.nama_kamar, harga_lama= old.harga, harga_baru=old.harga, waktu_perubahan=now();
+
+CREATE VIEW view_penginapan AS SELECT pelanggan_0069.kode_pelanggan,pelanggan_0069.nama,pelanggan_0069.tanggal_inap,kamar_0069.nama_kamar,kamar_0069.harga
+FROM pelanggan_0069,kamar_0069
+WHERE pelanggan_0069.nama_kamar=kamar_0069.nama_kamar
+
+SELECT pelanggan_0069.kode_pelanggan, pelanggan_0069.nama, pelanggan_0069.jenis_kelamin, pelanggan_0069.alamat, pelanggan_0069.nama_kamar,
+CASE 
+WHEN (pelanggan_0069.nama_kamar)='Suite' THEN 'Jam Dinding'
+WHEN (pelanggan_0069.nama_kamar)='Junior Suite' THEN 'Payung'
+ELSE 'Tidak Ada'
+END AS "Keterangan" FROM pelanggan_0069 GROUP BY pelanggan_0069.kode_pelanggan
+
+
+
+SOAL B
+
+CREATE TRIGGER insert_tiket AFTER INSERT ON tiket_0078 FOR EACH ROW INSERT INTO log_perubahan SET kode_tiket= new.kode_tiket, harga_lama= 0, harga_baru=new.harga, waktu_perubahan=now();
+
+CREATE TRIGGER update_tiket AFTER UPDATE ON tiket_0078 FOR EACH ROW INSERT INTO log_perubahan SET kode_tiket= old.kode_tiket, harga_lama= old.harga, harga_baru=new.harga, waktu_perubahan=now();
+
+CREATE VIEW view_nonton AS SELECT penonton_0078.kode_penonton,penonton_0078.nama,penonton_0078.tanggal_beli,tiket_0078.kode_tiket,tiket_0078.harga FROM penonton_0078,tiket_0078 WHERE penonton_0078.kode_tiket=tiket_0078.kode_tiket;
+
+SELECT penonton_0078.kode_penonton, penonton_0078.nama, penonton_0078.jenis_kelamin, penonton_0078.alamat, penonton_0078.kode_tiket, 
+CASE 
+WHEN (penonton_0078.kode_tiket)='VIP' THEN 'Kaos' 
+WHEN (penonton_0078.kode_tiket)='Early_Bird' THEN 'Poster' 
+ELSE 'Tidak Ada Bonus' END AS "Keterangan" FROM penonton_0078 GROUP BY penonton_0078.kode_penonton;
