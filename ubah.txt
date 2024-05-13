@@ -1,0 +1,168 @@
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'home.dart';
+
+class Ubah extends StatefulWidget {
+  final String? kode;
+  final String? nama;
+  final String? harga;
+  final String? spesifikasi;
+  final String? merk;
+
+  Ubah({this.kode, this.nama, this.harga, this.spesifikasi, this.merk});
+
+  @override
+  _UbahState createState() => _UbahState();
+}
+
+class _UbahState extends State<Ubah> {
+  TextEditingController kodeController = TextEditingController();
+  TextEditingController namaController = TextEditingController();
+  TextEditingController hargaController = TextEditingController();
+  TextEditingController spesifikasiController = TextEditingController();
+  TextEditingController merkController = TextEditingController();
+
+  void ubahData() {
+    var url = Uri.parse(
+        "https://api.bams-wp.my.id/akademik/barang/${kodeController.text}");
+    http.put(url, body: {
+      "nama": namaController.text,
+      "harga": hargaController.text,
+      "spesifikasi": spesifikasiController.text,
+      "merk": merkController.text,
+    });
+  }
+
+  void hapusData() {
+    var url = Uri.parse(
+        "https://api.bams-wp.my.id/akademik/barang/${kodeController.text}");
+    http.delete(url);
+  }
+
+  void konfirmasi() {
+    AlertDialog alertDialog = AlertDialog(
+      content: Text("Apakah anda yakin akan menghapus data ${widget.nama}"),
+      actions: <Widget>[
+        MaterialButton(
+          color: Colors.red,
+          child: Text(
+            "OK DELETE!",
+            style: TextStyle(color: Colors.black),
+          ),
+          onPressed: () {
+            hapusData();
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => Home()),
+              (Route<dynamic> route) => false,
+            );
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Data berhasil dihapus'),
+            ));
+          },
+        ),
+        MaterialButton(
+          color: Colors.green,
+          child: Text("CANCEL", style: TextStyle(color: Colors.black)),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ],
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alertDialog;
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    kodeController = TextEditingController(text: widget.kode);
+    namaController = TextEditingController(text: widget.nama);
+    hargaController = TextEditingController(text: widget.harga);
+    spesifikasiController = TextEditingController(text: widget.spesifikasi);
+    merkController = TextEditingController(text: widget.merk);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("EDIT DATA KOMPUTER"),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(10.0),
+        child: ListView(
+          children: <Widget>[
+            Text(
+              "Ubah Data Barang",
+              style: TextStyle(
+                color: Colors.red,
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.bold,
+                fontSize: 25,
+              ),
+            ),
+            SizedBox(
+              height: 40,
+            ),
+            TextField(
+              controller: kodeController,
+              decoration: InputDecoration(
+                labelText: "kode",
+              ),
+            ),
+            TextField(
+              controller: namaController,
+              decoration: InputDecoration(labelText: "Nama"),
+            ),
+            TextField(
+              controller: hargaController,
+              decoration: InputDecoration(labelText: "harga"),
+            ),
+            TextField(
+              controller: spesifikasiController,
+              decoration: InputDecoration(labelText: "spesifikasi"),
+            ),
+            TextField(
+              controller: merkController,
+              decoration: InputDecoration(labelText: "merk"),
+            ),
+            SizedBox(
+              height: 50,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                MaterialButton(
+                  color: Colors.orange,
+                  onPressed: () {
+                    ubahData();
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => Home()),
+                      (Route<dynamic> route) => false,
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text('Data berhasil diubah'),
+                    ));
+                  },
+                  child: Text("Ubah"),
+                ),
+                MaterialButton(
+                  color: Colors.red,
+                  onPressed: () {
+                    konfirmasi();
+                  },
+                  child: Text("Hapus"),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
